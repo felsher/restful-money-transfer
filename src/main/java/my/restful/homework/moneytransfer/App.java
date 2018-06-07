@@ -1,16 +1,17 @@
 package my.restful.homework.moneytransfer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import my.restful.homework.moneytransfer.controller.AccountController;
-import my.restful.homework.moneytransfer.dao.AccountDAO;
+import my.restful.homework.moneytransfer.controller.TransactionController;
 import my.restful.homework.moneytransfer.entity.Account;
 import my.restful.homework.moneytransfer.entity.User;
+import my.restful.homework.moneytransfer.error.H2DbException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
+
+import static my.restful.homework.moneytransfer.dao.AccountDAO.getAccountDao;
 
 public class App {
 
@@ -24,10 +25,19 @@ public class App {
         ServletHolder jerseyServlet = context.addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/*");
         jerseyServlet.setInitOrder(0);
 
-        String transferControllerName = AccountController.class.getCanonicalName();
-        jerseyServlet.setInitParameter("jersey.config.server.provider.classnames", transferControllerName);
+        String accountControllerName = AccountController.class.getCanonicalName();
+        String transferControllerName = TransactionController.class.getCanonicalName();
 
-        prepareTestAccounts();
+        jerseyServlet.setInitParameter(
+                "jersey.config.server.provider.classnames",
+                accountControllerName + ";" + transferControllerName
+        );
+
+        try {
+            prepareTestAccounts();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
 
         try {
             jettyServer.start();
@@ -37,16 +47,14 @@ public class App {
         }
     }
 
-    private static void prepareTestAccounts() throws SQLException, ClassNotFoundException {
-        AccountDAO accountDAO = new AccountDAO();
-
-        User userFirst = new User("Umputun", "U");
-        User userSecond = new User("Bobuk", "B");
+    private static void prepareTestAccounts() throws H2DbException {
+        User userFirst = new User(1L);
+        User userSecond = new User(2L);
         Account accountFirst = new Account(userFirst, new BigDecimal(3000.0000));
         Account accountSecond = new Account(userSecond, new BigDecimal(1000.000));
 
-        accountDAO.insertAccount(accountFirst);
-        accountDAO.insertAccount(accountSecond);
+        getAccountDao().insertAccount(accountFirst);
+        getAccountDao().insertAccount(accountSecond);
     }
 
 }

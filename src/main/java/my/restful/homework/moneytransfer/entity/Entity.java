@@ -1,21 +1,17 @@
 package my.restful.homework.moneytransfer.entity;
 
 /**
- * Base class for all entities in the application
+ * Base class for all entities
  */
 public abstract class Entity {
 
-    private String uuid;
+    private Long id; //I was thinking.. maybe I have to use for example UUID here? But then - "Ok, Not now.. Long id is fine"
 
-    public Entity(String uuid) {
-        this.uuid = uuid;
+    public Entity(Long id) {
+        this.id = id;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public Long getId() {
+        return id;
     }
 }

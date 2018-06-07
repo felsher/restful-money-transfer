@@ -1,60 +1,70 @@
 package my.restful.homework.moneytransfer.dao;
 
 import my.restful.homework.moneytransfer.entity.Account;
+import my.restful.homework.moneytransfer.entity.SuccessfulTransaction;
 import my.restful.homework.moneytransfer.entity.Transaction;
 import my.restful.homework.moneytransfer.entity.User;
-import org.apache.commons.dbutils.DbUtils;
+import my.restful.homework.moneytransfer.error.H2DbException;
 
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountDAO extends AbstractDAOConfig {
+import static my.restful.homework.moneytransfer.dao.DbUtils.close;
+import static my.restful.homework.moneytransfer.dao.DbUtils.getDbConnection;
 
-    private static final String CREATE_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS Account(id UUID PRIMARY KEY NOT NULL, ownerId UUID, balance DECIMAL(16,4));";
-    private static final String INSERT_ACCOUNT_QUERY = "INSERT INTO Account(id, ownerId, balance) VALUES (?, ?, ?);";
-    private static final String SELECT_ACCOUNT_QUERY = "select * from Account;";
+public class AccountDAO {
 
-    private void createAccountTable(Connection dbConnection) {
+    private static final String CREATE_ACCOUNT_TABLE_QUERY = "CREATE TABLE IF NOT EXISTS ACCOUNT(id LONG PRIMARY KEY AUTO_INCREMENT NOT NULL, ownerId LONG, balance DECIMAL(16,4));";
+    private static final String INSERT_ACCOUNT_QUERY = "INSERT INTO ACCOUNT(ownerId, balance) VALUES (?, ?);";
+    private static final String SELECT_ALL_ACCOUNT_QUERY = "select * from ACCOUNT;";
+
+    private void createAccountTable(Connection dbConnection) throws H2DbException {
         PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = dbConnection.prepareStatement(CREATE_TABLE_QUERY);
+            preparedStatement = dbConnection.prepareStatement(CREATE_ACCOUNT_TABLE_QUERY);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             close(null, preparedStatement, null);
         }
     }
 
-    public void transfer(Transaction transaction) {
-
-    }
-
-    public void insertAccount(Account account) {
+    /**
+     * @return generated account id
+     */
+    public Long insertAccount(Account account) throws H2DbException {
         Connection connection = null;
-        PreparedStatement insertPreparedStatement = null;
+        PreparedStatement stmnt = null;
+        ResultSet resSet = null;
         try {
-            connection = getDBConnection();
+            connection = getDbConnection();
             createAccountTable(connection);
 
-            insertPreparedStatement = connection.prepareStatement(INSERT_ACCOUNT_QUERY);
-            insertPreparedStatement.setObject(1, account.getUuid());
-            insertPreparedStatement.setObject(2, account.getOwner().getUuid());
-            insertPreparedStatement.setBigDecimal(3, account.getBalance());
-            insertPreparedStatement.executeUpdate();
+            stmnt = connection.prepareStatement(INSERT_ACCOUNT_QUERY, Statement.RETURN_GENERATED_KEYS);
+            stmnt.setLong(1, account.getOwner().getId());
+            stmnt.setBigDecimal(2, account.getBalance());
+            stmnt.executeUpdate();
 
-            connection.commit();
+            resSet = stmnt.getGeneratedKeys();
 
-        } catch (SQLException | ClassNotFoundException e) {
-            System.err.println(
-                    String.format("Exception occured in insertAccount method -> Account UUID:[%s] -> %s", account.getUuid(), e.getMessage())
+            if (resSet.next())
+                return resSet.getLong(1);
+            else
+                throw new H2DbException(
+                        String.format("Account insert failed, no id obtained -> Account owner id: %s", account.getOwner().getId())
+                );
+        } catch (SQLException e) {
+            throw new H2DbException(
+                    String.format("Exception occured in Account insert method -> Account owner: %s -> %s", account.getOwner().getId(), e.getMessage()),
+                    e
             );
         } finally {
-            close(connection, insertPreparedStatement, null);
+            close(connection, stmnt, resSet);
         }
     }
 
-    public List<Account> findAllAccounts() {
+    public List<Account> findAllAccounts() throws H2DbException {
         Connection connection = null;
         PreparedStatement selectStatement = null;
         ResultSet resultSet = null;
@@ -62,49 +72,32 @@ public class AccountDAO extends AbstractDAOConfig {
         List<Account> result = new ArrayList<>();
 
         try {
-            connection = getDBConnection();
-            selectStatement = connection.prepareStatement(SELECT_ACCOUNT_QUERY);
+            connection = getDbConnection();
+            selectStatement = connection.prepareStatement(SELECT_ALL_ACCOUNT_QUERY);
             resultSet = selectStatement.executeQuery();
 
             while (resultSet.next()) {
-                String accountId = resultSet.getObject("id").toString();
-                String ownerId = resultSet.getObject("ownerId").toString();
+                Long accountId = resultSet.getLong("id");
+                Long ownerId = resultSet.getLong("ownerId");
                 BigDecimal balance = resultSet.getBigDecimal("balance");
-                Account account = new Account(accountId, new User(ownerId, null, null), balance);
+
+                Account account = new Account(accountId, new User(ownerId), balance);
+
                 result.add(account);
             }
-        } catch (SQLException | ClassNotFoundException e) {
-            System.err.println(
-                    String.format("Exception occured in findAllAccounts method -> %s", e.getMessage())
-            );
+            return result;
+        } catch (SQLException e) {
+            throw new H2DbException("Exception occured in findAllAccounts method", e);
         } finally {
             close(connection, selectStatement, resultSet);
         }
-        return result;
     }
 
-    private void close(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet) {
-        try {
-            DbUtils.close(connection);
-        } catch (SQLException e) {
-            System.err.println(
-                    String.format("Failed to close connection -> %s", e.getMessage())
-            );
-        }
-        try {
-            DbUtils.close(preparedStatement);
-        } catch (SQLException e) {
-            System.err.println(
-                    String.format("Failed to close prepared statement -> %s", e.getMessage())
-            );
-        }
-        try {
-            DbUtils.close(resultSet);
-        } catch (SQLException e) {
-            System.err.println(
-                    String.format("Failed to close result set -> %s", e.getMessage())
-            );
-        }
+    public static class AccountDaoHolder {
+        public static final AccountDAO ACCOUNT_DAO = new AccountDAO();
     }
 
+    public static AccountDAO getAccountDao() {
+        return AccountDaoHolder.ACCOUNT_DAO;
+    }
 }

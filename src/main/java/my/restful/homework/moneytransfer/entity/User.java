@@ -1,38 +1,30 @@
 package my.restful.homework.moneytransfer.entity;
 
-import java.util.UUID;
-
 public class User extends Entity {
 
-    private String firstName;
+    //TODO if I want to use this fields, it would be great to create USER table in database, but no time for it, so let's just left it for now
 
-    private String lastName;
+//    private String firstName;
 
-    public User(String firstName, String lastName) {
-        this(UUID.randomUUID().toString(), firstName, lastName);
+//    private String lastName;
+
+    public User(/*String firstName, String lastName*/) {
+        super(null);
+//        this.firstName = firstName;
+//        this.lastName = lastName;
     }
 
-    public User(String id, String firstName, String lastName) {
+    public User(Long id/*, String firstName, String lastName*/) {
         super(id);
-        this.firstName = firstName;
-        this.lastName = lastName;
+//        this.firstName = firstName;
+//        this.lastName = lastName;
     }
 
-    public String getFirstName() {
-        return firstName;
-    }
+//    public String getFirstName() {
+//        return firstName;
+//    }
 
-    public User setFirstName(String firstName) {
-        this.firstName = firstName;
-        return this;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public User setLastName(String lastName) {
-        this.lastName = lastName;
-        return this;
-    }
+//    public String getLastName() {
+//        return lastName;
+//    }
 }

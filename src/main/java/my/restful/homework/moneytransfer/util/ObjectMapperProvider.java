@@ -13,9 +13,10 @@ public class ObjectMapperProvider {
     public static ObjectMapper getObjectMapper() {
         if (objectMapper == null) {
             objectMapper = new ObjectMapper();
-            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
-            df.setTimeZone(TimeZone.getTimeZone("UTC"));
-            objectMapper.setDateFormat(df);
+            //Don't really need it right now
+//            final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
+//            df.setTimeZone(TimeZone.getTimeZone("UTC"));
+//            objectMapper.setDateFormat(df);
         }
         return objectMapper;
     }

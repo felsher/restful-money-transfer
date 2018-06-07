@@ -10,16 +10,23 @@ public class Transaction extends Entity {
 
     private BigDecimal amount;
 
-    private String fromAccountId;
+    private Long fromAccountId;
 
-    private String toAccountId;
+    private Long toAccountId;
 
     @JsonCreator
-    Transaction(
+    public Transaction(
             @JsonProperty("amount") BigDecimal amount,
-            @JsonProperty("fromAccountId") String fromAccountId,
-            @JsonProperty("toAccountId") String toAccountId) {
-        super(UUID.randomUUID().toString());
+            @JsonProperty("fromAccountId") Long fromAccountId,
+            @JsonProperty("toAccountId") Long toAccountId) {
+        super(null);
+        this.amount = amount;
+        this.fromAccountId = fromAccountId;
+        this.toAccountId = toAccountId;
+    }
+
+    public Transaction(Long id, BigDecimal amount, Long fromAccountId, Long toAccountId) {
+        super(id);
         this.amount = amount;
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
@@ -29,26 +36,11 @@ public class Transaction extends Entity {
         return amount;
     }
 
-    public Transaction setAmount(BigDecimal amount) {
-        this.amount = amount;
-        return this;
-    }
-
-    public String getFromAccountId() {
+    public Long getFromAccountId() {
         return fromAccountId;
     }
 
-    public Transaction setFromAccountId(String fromAccountId) {
-        this.fromAccountId = fromAccountId;
-        return this;
-    }
-
-    public String getToAccountId() {
+    public Long getToAccountId() {
         return toAccountId;
-    }
-
-    public Transaction setToAccountId(String toAccountId) {
-        this.toAccountId = toAccountId;
-        return this;
     }
 }

@@ -1,7 +1,6 @@
 package my.restful.homework.moneytransfer.entity;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 public class Account extends Entity {
 
@@ -10,10 +9,10 @@ public class Account extends Entity {
     private BigDecimal balance;
 
     public Account(User owner, BigDecimal balance) {
-        this(UUID.randomUUID().toString(), owner, balance);
+        this(null, owner, balance);
     }
 
-    public Account(String id, User owner, BigDecimal balance) {
+    public Account(Long id, User owner, BigDecimal balance) {
         super(id);
         this.owner = owner;
         this.balance = balance;
@@ -23,17 +22,7 @@ public class Account extends Entity {
         return owner;
     }
 
-    public Account setOwner(User owner) {
-        this.owner = owner;
-        return this;
-    }
-
     public BigDecimal getBalance() {
         return balance;
-    }
-
-    public Account setBalance(BigDecimal balance) {
-        this.balance = balance;
-        return this;
     }
 }
