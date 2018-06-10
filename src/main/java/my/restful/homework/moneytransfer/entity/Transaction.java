@@ -6,27 +6,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class Transaction extends Entity {
+public class Transaction {
 
     private BigDecimal amount;
 
-    private Long fromAccountId;
+    private int fromAccountId;
 
-    private Long toAccountId;
+    private int toAccountId;
+
+    public Transaction() {
+    }
 
     @JsonCreator
     public Transaction(
             @JsonProperty("amount") BigDecimal amount,
-            @JsonProperty("fromAccountId") Long fromAccountId,
-            @JsonProperty("toAccountId") Long toAccountId) {
-        super(null);
-        this.amount = amount;
-        this.fromAccountId = fromAccountId;
-        this.toAccountId = toAccountId;
-    }
-
-    public Transaction(Long id, BigDecimal amount, Long fromAccountId, Long toAccountId) {
-        super(id);
+            @JsonProperty("fromAccountId") int fromAccountId,
+            @JsonProperty("toAccountId") int toAccountId) {
         this.amount = amount;
         this.fromAccountId = fromAccountId;
         this.toAccountId = toAccountId;
@@ -36,11 +31,11 @@ public class Transaction extends Entity {
         return amount;
     }
 
-    public Long getFromAccountId() {
+    public int getFromAccountId() {
         return fromAccountId;
     }
 
-    public Long getToAccountId() {
+    public int getToAccountId() {
         return toAccountId;
     }
 }

@@ -14,7 +14,7 @@ public class StringUtils {
             return null;
         return getObjectMapper()
                 .writerWithDefaultPrettyPrinter()
-                .writeValueAsString(o);
+                .writeValueAsString(o) + "\n";
     }
 
     public static String toPrettyJSON(List list) throws JsonProcessingException {
@@ -22,7 +22,7 @@ public class StringUtils {
             return null;
 
         if (list.isEmpty())
-            return "{}";
+            return "{\n\"result\":[]\n}\n";
 
         StringJoiner joiner = new StringJoiner(",\n");
 
@@ -33,6 +33,6 @@ public class StringUtils {
             );
         }
 
-        return joiner.toString();
+        return "{\n\"result\":[\n" + joiner.toString() + "\n]\n}\n";
     }
 }
