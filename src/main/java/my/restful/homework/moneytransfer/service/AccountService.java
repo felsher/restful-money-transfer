@@ -49,6 +49,9 @@ public class AccountService {
         }
     }
 
+    /**
+     * You can use this method, if you wanna see how parallel transfers test working
+     * */
     private void debugPrint(int from, int to, BigDecimal amount) {
         String message = "Thread: %s transfered amount %s from %s to %s. Total balance at the moment: %s\n";
         String threadName = Thread.currentThread().getName();

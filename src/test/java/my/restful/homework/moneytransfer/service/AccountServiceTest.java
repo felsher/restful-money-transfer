@@ -33,7 +33,7 @@ public class AccountServiceTest {
         accountService = new AccountService();
         accountIds = new ArrayList<>(ACCOUNTS_AMOUNT);
 
-        createAccounts(ACCOUNTS_AMOUNT);
+        createAccounts();
     }
 
     @Test
@@ -133,8 +133,8 @@ public class AccountServiceTest {
         assertEquals(expectedTotalBalance, actualTotalBalance);
     }
 
-    private void createAccounts(int amount) {
-        for (int i = 0; i < amount; i++) {
+    private void createAccounts() {
+        for (int i = 0; i < ACCOUNTS_AMOUNT; i++) {
             try {
                 accountIds.add(accountService.create(new BigDecimal(INITIAL_ACCOUNTS_BALANCE)));
             } catch (AccountServiceException e) {

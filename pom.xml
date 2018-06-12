@@ -20,6 +20,8 @@
         <jetty.version>9.2.3.v20140905</jetty.version>
         <h2database.version>1.4.197</h2database.version>
         <common-dbutils.version>1.6</common-dbutils.version>
+        <junit.version>4.12</junit.version>
+        <assured.version>3.0.3</assured.version>
     </properties>
 
     <dependencies>
@@ -61,7 +63,12 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${assured.version}</version>
         </dependency>
     </dependencies>
 
