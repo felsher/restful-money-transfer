@@ -1,7 +1,7 @@
 # RESTful-Money-Transfer
 
 # Disclaimer
-It's a RESTful service, written on Java 8, without Spring Framework usage, with in-memory datastore and as simple as a table!
+Small restful service, written on Java 8, without Spring Framework usage
 
 ## API
 >Application listen to port: 5555  
